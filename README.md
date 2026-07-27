@@ -76,3 +76,11 @@ successfully connecting — a `readinessProbe` alone won't order that for you; e
 retry-friendly app startup (already the case here — see each service's DB
 connection code) or an `initContainer` that waits on Mongo is an acceptable
 approach. Document whichever you pick.
+
+## Branching convention
+
+- `feature/<short-description>` — new functionality
+- `bugfix/<short-description>` — non-urgent fixes
+- `hotfix/<short-description>` — urgent production fixes
+
+All changes land on `main` via pull request with at least 1 approval (enforced by repository ruleset).
