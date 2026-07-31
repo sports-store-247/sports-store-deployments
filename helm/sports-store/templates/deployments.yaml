@@ -1,0 +1,64 @@
+﻿{{- range $serviceName, $service := .Values.services }}
+{{- if $service.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $serviceName }}
+  namespace: {{ $.Values.namespace.name }}
+  labels:
+    app: {{ $serviceName }}
+    {{- include "sports-store.labels" $ | nindent 4 }}
+spec:
+  replicas: {{ $service.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ $serviceName }}
+  template:
+    metadata:
+      labels:
+        app: {{ $serviceName }}
+        {{- include "sports-store.labels" $ | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ $serviceName }}
+          image: "{{ $service.image.repository }}:{{ $service.image.tag }}"
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ $service.containerPort }}
+              protocol: TCP
+          {{- if $service.env }}
+          env:
+            {{- if $service.env.config }}
+            {{- range $key, $value := $service.env.config }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+            {{- end }}
+            {{- if $service.env.secrets }}
+            {{- range $envName, $secretKey := $service.env.secrets }}
+            - name: {{ $envName }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $service.secretName }}
+                  key: {{ $secretKey }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          readinessProbe:
+            httpGet:
+              path: {{ default "/health" $service.healthPath }}
+              port: {{ $service.containerPort }}
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: {{ default "/health" $service.healthPath }}
+              port: {{ $service.containerPort }}
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            {{- toYaml $service.resources | nindent 12 }}
+{{- end }}
+{{- end }}
