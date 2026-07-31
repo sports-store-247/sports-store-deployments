@@ -1,0 +1,22 @@
+﻿{{- range $serviceName, $service := .Values.services }}
+{{- if $service.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $serviceName }}
+  namespace: {{ $.Values.namespace.name }}
+  labels:
+    app: {{ $serviceName }}
+    {{- include "sports-store.labels" $ | nindent 4 }}
+spec:
+  type: {{ $service.service.type }}
+  selector:
+    app: {{ $serviceName }}
+  ports:
+    - name: http
+      port: {{ $service.service.port }}
+      targetPort: {{ $service.containerPort }}
+      protocol: TCP
+{{- end }}
+{{- end }}

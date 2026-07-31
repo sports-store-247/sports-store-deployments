@@ -1,0 +1,17 @@
+﻿{{- range $serviceName, $service := .Values.services }}
+{{- if and $service.enabled $service.configMap $service.env.config }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $service.configMap }}
+  namespace: {{ $.Values.namespace.name }}
+  labels:
+    app: {{ $serviceName }}
+    {{- include "sports-store.labels" $ | nindent 4 }}
+data:
+  {{- range $key, $value := $service.env.config }}
+  {{ $key }}: {{ $value | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}
