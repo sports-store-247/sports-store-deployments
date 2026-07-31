@@ -137,7 +137,7 @@ services:
         cpu: 500m
         memory: 256Mi
 
-gateway:
+  gateway:
     enabled: true
     replicaCount: 1
     image:
@@ -168,3 +168,22 @@ secrets:
       CART_MONGO_URI: mongodb://root:sports-store-local-password@mongodb:27017/cart_db?authSource=admin
       ORDER_MONGO_URI: mongodb://root:sports-store-local-password@mongodb:27017/order_db?authSource=admin
       PAYMENT_MONGO_URI: mongodb://root:sports-store-local-password@mongodb:27017/payment_db?authSource=admin
+
+
+mongodb:
+  enabled: true
+  auth:
+    enabled: true
+    rootUser: root
+    rootPassword: sports-store-local-password
+  architecture: standalone
+  persistence:
+    enabled: true
+    size: 1Gi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

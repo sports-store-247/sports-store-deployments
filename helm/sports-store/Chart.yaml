@@ -4,3 +4,9 @@ description: Helm chart for the CloudCart Sports Store application
 type: application
 version: 0.1.0
 appVersion: "0.1.0"
+
+dependencies:
+  - name: mongodb
+    version: 16.5.20
+    repository: https://charts.bitnami.com/bitnami
+    condition: mongodb.enabled
