@@ -137,7 +137,7 @@ services:
         cpu: 500m
         memory: 256Mi
 
-gateway:
+  gateway:
     enabled: true
     replicaCount: 1
     image:
