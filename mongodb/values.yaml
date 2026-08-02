@@ -1,7 +1,7 @@
 image:
   registry: docker.io
-  repository: bitnami/mongodb
-  tag: latest
+  repository: library/mongo
+  tag: "8.0"
 
 auth:
   enabled: true
@@ -18,3 +18,18 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
+
+livenessProbe:
+  enabled: false
+readinessProbe:
+  enabled: false
+startupProbe:
+  enabled: false
+
+podSecurityContext:
+  enabled: true
+  runAsUser: 0
+containerSecurityContext:
+  enabled: true
+  runAsUser: 0
+  runAsNonRoot: false
