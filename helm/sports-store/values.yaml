@@ -196,3 +196,11 @@ mongodb:
     enabled: true
     runAsUser: 0
     runAsNonRoot: false
+    readOnlyRootFilesystem: false
+    capabilities:
+      drop: []
+      add:
+        - CHOWN
+        - SETUID
+        - SETGID
+        - DAC_OVERRIDE
