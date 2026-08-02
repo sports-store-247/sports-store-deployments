@@ -4,6 +4,8 @@ namespace:
 
 global:
   imagePullPolicy: Always
+  security:
+    allowInsecureImages: true
 
 services:
   auth-service:
