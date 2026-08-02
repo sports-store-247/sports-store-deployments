@@ -180,7 +180,10 @@ mongodb:
     - name: MONGO_INITDB_ROOT_USERNAME
       value: "root"
     - name: MONGO_INITDB_ROOT_PASSWORD
-      value: "sports-store-local-password"
+      valueFrom:
+        secretKeyRef:
+          name: mongodb-credentials
+          key: mongodb-root-password
   resources:
     requests:
       cpu: 100m
