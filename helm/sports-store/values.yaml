@@ -1,17 +1,17 @@
-﻿namespace:
+namespace:
   create: true
   name: sports-store
 
 global:
-  imagePullPolicy: IfNotPresent
+  imagePullPolicy: Always
 
 services:
   auth-service:
     enabled: true
     replicaCount: 1
     image:
-      repository: sports-store-auth-service
-      tag: dev
+      repository: 765858872029.dkr.ecr.us-east-1.amazonaws.com/sports-store-auth-service
+      tag: latest
     containerPort: 8000
     service:
       type: ClusterIP
@@ -36,8 +36,8 @@ services:
     enabled: true
     replicaCount: 1
     image:
-      repository: sports-store-catalog-service
-      tag: dev
+      repository: 765858872029.dkr.ecr.us-east-1.amazonaws.com/sports-store-catalog-service
+      tag: latest
     containerPort: 8000
     service:
       type: ClusterIP
@@ -59,8 +59,8 @@ services:
     enabled: true
     replicaCount: 1
     image:
-      repository: sports-store-cart-service
-      tag: dev
+      repository: 765858872029.dkr.ecr.us-east-1.amazonaws.com/sports-store-cart-service
+      tag: latest
     containerPort: 8000
     service:
       type: ClusterIP
@@ -85,8 +85,8 @@ services:
     enabled: true
     replicaCount: 1
     image:
-      repository: sports-store-order-service
-      tag: dev
+      repository: 765858872029.dkr.ecr.us-east-1.amazonaws.com/sports-store-order-service
+      tag: latest
     containerPort: 8000
     service:
       type: ClusterIP
@@ -115,8 +115,8 @@ services:
     enabled: true
     replicaCount: 1
     image:
-      repository: sports-store-payment-service
-      tag: dev
+      repository: 765858872029.dkr.ecr.us-east-1.amazonaws.com/sports-store-payment-service
+      tag: latest
     containerPort: 8000
     service:
       type: ClusterIP
@@ -141,8 +141,8 @@ services:
     enabled: true
     replicaCount: 1
     image:
-      repository: sports-store-gateway
-      tag: dev
+      repository: 765858872029.dkr.ecr.us-east-1.amazonaws.com/sports-store-gateway
+      tag: latest
     containerPort: 80
     service:
       type: LoadBalancer
@@ -161,9 +161,6 @@ secrets:
   app:
     name: app-secrets
 
-
-
-
 mongodb:
   enabled: true
   auth:
@@ -181,4 +178,3 @@ mongodb:
     limits:
       cpu: 500m
       memory: 512Mi
-
