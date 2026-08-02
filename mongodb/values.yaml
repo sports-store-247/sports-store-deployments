@@ -1,11 +1,15 @@
+image:
+  registry: docker.io
+  repository: library/mongo
+  tag: "8.0"
+
 auth:
   enabled: true
   rootUser: root
   rootPassword: sports-store-local-password
 
 persistence:
-  enabled: true
-  size: 1Gi
+  enabled: false
 
 resources:
   requests:
@@ -14,3 +18,18 @@ resources:
   limits:
     cpu: 500m
     memory: 512Mi
+
+livenessProbe:
+  enabled: false
+readinessProbe:
+  enabled: false
+startupProbe:
+  enabled: false
+
+podSecurityContext:
+  enabled: true
+  runAsUser: 0
+containerSecurityContext:
+  enabled: true
+  runAsUser: 0
+  runAsNonRoot: false
