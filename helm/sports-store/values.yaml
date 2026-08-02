@@ -176,6 +176,11 @@ mongodb:
   architecture: standalone
   persistence:
     enabled: false
+  extraEnvVars:
+    - name: MONGO_INITDB_ROOT_USERNAME
+      value: "root"
+    - name: MONGO_INITDB_ROOT_PASSWORD
+      value: "sports-store-local-password"
   resources:
     requests:
       cpu: 100m
