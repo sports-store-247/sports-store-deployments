@@ -169,8 +169,7 @@ mongodb:
     existingSecret: mongodb-credentials
   architecture: standalone
   persistence:
-    enabled: true
-    size: 1Gi
+    enabled: false
   resources:
     requests:
       cpu: 100m
