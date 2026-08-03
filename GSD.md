@@ -19,6 +19,23 @@ the project lives in [`STATUS.md`](./STATUS.md).
    (`existingSecret`, env var names, placeholders) are committed.
 5. **PR-gated `main`.** All changes reach `main` via pull request with at least one
    approval (enforced by the repository ruleset).
+6. **Status before PR.** Update `STATUS.md` (and the relevant `gsd/` note) to reflect
+   the change **before** opening the PR, so reviewers see current state.
+7. **Coordinate before PR.** Anything that affects shared team process, cross-repo
+   ownership, or another owner's area is raised with that owner first — never opened
+   as a surprise PR.
+
+---
+
+## Team coordination
+
+- **No autonomous process-affecting PRs.** Agents and contributors do not open PRs
+  that change team workflow, ownership boundaries, or cross-repo concerns without
+  prior coordination with the affected owners.
+- **Stay in your lane.** Work outside the current scope (see [`STATUS.md`](./STATUS.md)
+  ownership) is flagged for the owning party, not silently fixed.
+- **Write status first.** Before opening a PR, the corresponding `STATUS.md` and
+  `gsd/` notes must already describe what changed and why.
 
 ---
 
