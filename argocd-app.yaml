@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: sports-store
+  namespace: argocd
+spec:
+  description: "Sports Store AppProject"
+  sourceRepos:
+    - "*"
+  destinations:
+    - namespace: sports-store
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudcart
+  namespace: argocd
+spec:
+  project: sports-store
+  source:
+    repoURL: 'https://github.com/sports-store-247/sports-store-deployments.git'
+    path: helm/sports-store
+    targetRevision: main
+    helm:
+      valueFiles:
+        - values-aws.yaml
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: sports-store
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
