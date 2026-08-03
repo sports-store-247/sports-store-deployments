@@ -6,6 +6,17 @@ global:
   imagePullPolicy: Always
   security:
     allowInsecureImages: true
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 10001
+    runAsGroup: 10001
+    fsGroup: 10001
+    seccompProfile:
+      type: RuntimeDefault
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop: ["ALL"]
 
 services:
   auth-service:
@@ -145,7 +156,11 @@ services:
     image:
       repository: 765858872029.dkr.ecr.us-east-1.amazonaws.com/sports-store-gateway
       tag: latest
-    containerPort: 80
+    containerPort: 8080
+    podSecurityContext:
+      runAsUser: 101
+      runAsGroup: 101
+      fsGroup: 101
     service:
       type: ClusterIP
       port: 80

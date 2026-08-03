@@ -20,10 +20,14 @@ spec:
         app: {{ $serviceName }}
         {{- include "sports-store.labels" $ | nindent 8 }}
     spec:
+      securityContext:
+        {{- toYaml (mergeOverwrite (deepCopy $.Values.global.podSecurityContext) (default dict $service.podSecurityContext)) | nindent 8 }}
       containers:
         - name: {{ $serviceName }}
           image: "{{ $service.image.repository }}:{{ $service.image.tag }}"
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          securityContext:
+            {{- toYaml (mergeOverwrite (deepCopy $.Values.global.containerSecurityContext) (default dict $service.containerSecurityContext)) | nindent 12 }}
           ports:
             - name: http
               containerPort: {{ $service.containerPort }}
