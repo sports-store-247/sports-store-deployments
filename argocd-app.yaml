@@ -18,7 +18,6 @@ apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: sports-store
-  name: cloudcart
   namespace: argocd
 spec:
   project: sports-store
