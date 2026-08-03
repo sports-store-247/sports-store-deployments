@@ -3,10 +3,10 @@
 Live project dashboard. Process rules live in [`GSD.md`](./GSD.md); this file tracks
 **current state** only.
 
-_Last updated: 2026-08-03 (helm template verification — see
-[render report](./gsd/verifications/2026-08-03-helm-template-render.md);
-prior [org-delta-monitor](./gsd/research/2026-08-03-org-delta-monitor.md) /
-[summary](./gsd/repo-feedback/2026-08-03-org-delta-summary.md))_
+_Last updated: 2026-08-03 (post-merge full risk scan — see
+[risk scan](./gsd/verifications/2026-08-03-post-merge-full-risk-scan.md) /
+[feedback](./gsd/repo-feedback/2026-08-03-deployments-post-merge-feedback.md);
+prior [render report](./gsd/verifications/2026-08-03-helm-template-render.md))_
 
 ---
 
@@ -16,7 +16,7 @@ prior [org-delta-monitor](./gsd/research/2026-08-03-org-delta-monitor.md) /
 |-------|-------|
 | Stage | Stage 3+ — Helm umbrella + Argo CD GitOps + ESO restructure landed on `main` |
 | Namespace (target) | `sports-store` |
-| Active branch | `docs/helm-secret-bootstrap` (⚠️ behind `main`; #17/#18 not merged in locally) |
+| Active branch | `gsd/post-merge-full-risk-scan` (in sync with `main`) |
 | Default branch | `main` (PR-gated, 1 approval required) |
 | Helm chart | `helm/sports-store` (parent chart; Bitnami MongoDB dependency) |
 | GitOps | `argocd-app.yaml` (AppProject + Application, automated sync) |
@@ -65,34 +65,35 @@ Full `git fetch --prune` sweep across all 10 repos. Highlights:
   `environments/production/{values,images}.yaml`, `ingress.yaml`, `servicemonitor.yaml`,
   `values-aws.yaml`. This **supersedes** the old "app-secrets empty `stringData`" item.
 
-**Open — David-owned (deployment layer) — VERIFIED via `helm template`**
+**Resolved since last scan (verified in post-merge render)**
 
-- 🔴 **F1 — `latest` deployed (CONFIRMED).** All 6 rendered app Deployments resolve to
-  `…:0.1.0-latest` (auth/cart/catalog/gateway/order/payment). Brief requires
-  `<semver>-<7char-hash>` and no `latest`. Service-repo CI fix did **not** propagate to
-  the chart. Blocked on the real pushed tags (Sean/Daniel). (MongoDB `mongo:8.0` is fine.)
-- 🔴 **F3 — Ingress backend points to a non-existent Service (CONFIRMED, elevated).**
-  `ingress.yaml` duplicate `service.name` key resolves (last-wins) to
-  `sports-store-gateway`, but the actual Service is named `gateway`. The ALB Ingress
-  backend would not resolve — a **functional routing defect**, not cosmetic.
-- 🟠 **F2 — Argo CD Application name = `cloudcart` (CONFIRMED).** Duplicate `name:` key in
-  `argocd-app.yaml` (last-wins). AppProject is correctly `sports-store`.
-- 🟠 **F4 — ServiceMonitor does NOT render (CONFIRMED).** `servicemonitor.yaml` ranges
-  `.Values.microservices` (undefined); everything else uses `.Values.services`. 0
-  ServiceMonitors emitted — silent observability no-op.
-- 🟠 **F6 — Frontend renders no workload.** `images.yaml` defines a `frontend` tag, but no
-  Deployment/Service for frontend renders (not in `.Values.services`). Confirm intent.
-- 🟠 **F5 — local branch behind restructure**; refresh before further deployment work.
+- ✅ **F1 — image tags.** All 6 app images now `0.1.0-<7char-hash>` (no `latest`).
+- ✅ **F3 — ingress routing.** Backend → Service `gateway`:80 in `sports-store` (merged).
+- ✅ **F4 — ServiceMonitors now render** (6 emitted). But selectors don't match — see R1.
 
-_Render evidence: `helm template` exit 0, 1327 lines; see
-[verification report](./gsd/verifications/2026-08-03-helm-template-render.md)._
+**Open — David-owned (deployment layer) — VERIFIED via post-merge render**
+
+- 🔴 **R1 — Metrics not scraped.** ServiceMonitor selectors want
+  `app.kubernetes.io/name: <service>`, but Services carry `app.kubernetes.io/name:
+  sports-store` (shared helper). No Service matches → Prometheus scrapes nothing.
+- 🔴 **R2 — MongoDB has no persistence.** `datadir` is `emptyDir` on a Deployment (no PVC).
+  Data does not survive restart/upgrade/rollback/uninstall — **brief violation**.
+- 🟠 **R4 — `mongo-init` ConfigMap renders with blank namespace** (missing
+  `.Values.namespace.name`); wrong-namespace on a raw `kubectl apply` without `-n`.
+- 🟠 **F2 — Argo CD Application name = `cloudcart`** (duplicate `name:` in `argocd-app.yaml`).
+- 🟠 **F6 — Frontend not chart-managed** (no Deployment/Service renders). Confirm intent.
+
+_Evidence: lint clean, `helm template --namespace sports-store` exit 0, 1519 lines; see
+[risk scan](./gsd/verifications/2026-08-03-post-merge-full-risk-scan.md)._
 
 **Open — other owners (track, don't fix)**
 
-- Sean: ESO `SecretStore` backend (AWS Secrets Manager + IRSA), ALB controller, and the
-  full observability stack (kube-prometheus-stack / Loki / Alloy / dashboards / alerts).
-- Sean/team: required-extension **implementation** evidence.
-- Daniel: `fix/ci-instrumentator` open PRs on 5 backends.
+- 🔴 **R3 (cross-team blocker) — Sean:** `app-secrets`/Mongo URIs come from AWS Secrets
+  Manager `sports-store/production` via ESO (IRSA `sports-store-external-secrets-role`,
+  `us-east-1`). If the ESO operator, secret, properties, or IRSA are missing → pods not
+  ready → ALB 503 → demo fails. `*_MONGO_URI` values must resolve `sports-store-mongodb:27017`.
+- Sean: ALB controller install; EBS StorageClass for R2; required-extension implementation.
+- Daniel: R5 `/metrics` endpoints on service `http` ports; `fix/ci-instrumentator` PRs.
 
 ---
 
@@ -115,21 +116,19 @@ _Render evidence: `helm template` exit 0, 1327 lines; see
 
 ## Next up (David's scope)
 
-- [ ] Refresh `docs/helm-secret-bootstrap` onto post-restructure `main` (F5).
-- [ ] `helm template` verification note under `gsd/verifications/` — check F4 render,
-      F1 resolved tags, and gateway-only Ingress.
-- [ ] Plan corrections for F2 (Argo CD app name) and F3 (ingress name) on their own branches.
-- [ ] Get canonical ECR tag scheme from Sean to pin F1.
+- [ ] Plan R1 (ServiceMonitor label match) and R2 (MongoDB persistence) as
+      `gsd/instructions/` notes, each on its own future branch.
+- [ ] Plan R4 (`mongo-init` namespace) and F2 (Argo CD app name) corrections.
+- [ ] Confirm frontend intent (F6) with the team.
+- [ ] Get Secrets Manager content + StorageClass answers from Sean (R2/R3).
 
 ---
 
 ## Known issues / watch
 
-- 🔴 F1 `0.1.0-latest` deployed image tags (all 6 app services) — brief violation, verified.
-- 🔴 F3 Ingress backend → `sports-store-gateway` but Service is `gateway` — broken routing, verified.
-- 🟠 F2 Argo CD Application name `cloudcart` (should be `sports-store`) — verified.
-- 🟠 F4 ServiceMonitor does not render (`.Values.microservices` vs `.Values.services`) — verified.
-- 🟠 F6 Frontend not chart-managed (no Deployment/Service renders) — confirm intent.
+- 🔴 R1 ServiceMonitor selector ≠ Service labels → metrics not scraped (David) — verified.
+- 🔴 R2 MongoDB `emptyDir` (no PVC) → data loss on upgrade/uninstall (David) — verified, brief violation.
+- 🔴 R3 ESO-sourced secrets depend on Sean's Secrets Manager + IRSA (cross-team blocker).
+- 🟠 R4 `mongo-init` blank namespace; F2 Argo CD app `cloudcart`; F6 frontend not chart-managed.
 - Domain reachability ≠ E2E verified. Keep the two separate in all reports.
-- ESO now owns app secrets; wiring depends on Sean's AWS Secrets Manager + IRSA backend.
 - Secrets must stay reference-only in git. Any leaked value is an immediate fix.
