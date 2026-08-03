@@ -17,7 +17,7 @@ spec:
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: cloudcart
+  name: sports-store
   namespace: argocd
 spec:
   project: sports-store
@@ -27,7 +27,8 @@ spec:
     targetRevision: main
     helm:
       valueFiles:
-        - values-aws.yaml
+        - environments/production/values.yaml
+        - environments/production/images.yaml
   destination:
     server: 'https://kubernetes.default.svc'
     namespace: sports-store
