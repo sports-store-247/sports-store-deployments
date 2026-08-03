@@ -177,6 +177,7 @@ mongodb:
   initdbScriptsConfigMap: "mongo-init"
   persistence:
     enabled: false
+
   extraEnvVars:
     - name: MONGO_INITDB_ROOT_USERNAME
       value: "root"
