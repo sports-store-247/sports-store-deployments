@@ -3,8 +3,9 @@
 Live project dashboard. Process rules live in [`GSD.md`](./GSD.md); this file tracks
 **current state** only.
 
-_Last updated: 2026-08-03 (org delta check — see
-[org-delta-monitor](./gsd/research/2026-08-03-org-delta-monitor.md) /
+_Last updated: 2026-08-03 (helm template verification — see
+[render report](./gsd/verifications/2026-08-03-helm-template-render.md);
+prior [org-delta-monitor](./gsd/research/2026-08-03-org-delta-monitor.md) /
 [summary](./gsd/repo-feedback/2026-08-03-org-delta-summary.md))_
 
 ---
@@ -64,20 +65,27 @@ Full `git fetch --prune` sweep across all 10 repos. Highlights:
   `environments/production/{values,images}.yaml`, `ingress.yaml`, `servicemonitor.yaml`,
   `values-aws.yaml`. This **supersedes** the old "app-secrets empty `stringData`" item.
 
-**Open — David-owned (deployment layer)**
+**Open — David-owned (deployment layer) — VERIFIED via `helm template`**
 
-- 🔴 **F1 — `latest` still deployed.** `helm/sports-store/values.yaml` (6×) and
-  `environments/production/images.yaml` (`0.1.0-latest`, all 7 services) resolve to
-  `latest`-style tags. Brief requires `<semver>-<7char-hash>` and no `latest`. The
-  service-repo CI fix did **not** propagate to the deployments chart. Blocked on the
-  real pushed tags (Sean/Daniel).
-- 🟠 **F2 — Argo CD Application name = `cloudcart`.** Duplicate `name:` key in
-  `argocd-app.yaml` (last wins) revives the `cloudcart` vs `sports-store` mismatch at
-  the GitOps layer (destination namespace is correctly `sports-store`).
-- 🟠 **F3 — `ingress.yaml` duplicate `service.name` key.**
-- 🟠 **F4 — ServiceMonitor value-key mismatch** (`.Values.microservices` vs
-  `.Values.services`); may render nothing — verify via `helm template`.
+- 🔴 **F1 — `latest` deployed (CONFIRMED).** All 6 rendered app Deployments resolve to
+  `…:0.1.0-latest` (auth/cart/catalog/gateway/order/payment). Brief requires
+  `<semver>-<7char-hash>` and no `latest`. Service-repo CI fix did **not** propagate to
+  the chart. Blocked on the real pushed tags (Sean/Daniel). (MongoDB `mongo:8.0` is fine.)
+- 🔴 **F3 — Ingress backend points to a non-existent Service (CONFIRMED, elevated).**
+  `ingress.yaml` duplicate `service.name` key resolves (last-wins) to
+  `sports-store-gateway`, but the actual Service is named `gateway`. The ALB Ingress
+  backend would not resolve — a **functional routing defect**, not cosmetic.
+- 🟠 **F2 — Argo CD Application name = `cloudcart` (CONFIRMED).** Duplicate `name:` key in
+  `argocd-app.yaml` (last-wins). AppProject is correctly `sports-store`.
+- 🟠 **F4 — ServiceMonitor does NOT render (CONFIRMED).** `servicemonitor.yaml` ranges
+  `.Values.microservices` (undefined); everything else uses `.Values.services`. 0
+  ServiceMonitors emitted — silent observability no-op.
+- 🟠 **F6 — Frontend renders no workload.** `images.yaml` defines a `frontend` tag, but no
+  Deployment/Service for frontend renders (not in `.Values.services`). Confirm intent.
 - 🟠 **F5 — local branch behind restructure**; refresh before further deployment work.
+
+_Render evidence: `helm template` exit 0, 1327 lines; see
+[verification report](./gsd/verifications/2026-08-03-helm-template-render.md)._
 
 **Open — other owners (track, don't fix)**
 
@@ -117,9 +125,11 @@ Full `git fetch --prune` sweep across all 10 repos. Highlights:
 
 ## Known issues / watch
 
-- 🔴 F1 `latest`/`0.1.0-latest` deployed image tags — brief violation at the deploy layer.
-- 🟠 F2 Argo CD Application name `cloudcart` (should be `sports-store`).
-- 🟠 F3/F4 duplicate-key and ServiceMonitor value-key defects (verify before fixing).
+- 🔴 F1 `0.1.0-latest` deployed image tags (all 6 app services) — brief violation, verified.
+- 🔴 F3 Ingress backend → `sports-store-gateway` but Service is `gateway` — broken routing, verified.
+- 🟠 F2 Argo CD Application name `cloudcart` (should be `sports-store`) — verified.
+- 🟠 F4 ServiceMonitor does not render (`.Values.microservices` vs `.Values.services`) — verified.
+- 🟠 F6 Frontend not chart-managed (no Deployment/Service renders) — confirm intent.
 - Domain reachability ≠ E2E verified. Keep the two separate in all reports.
 - ESO now owns app secrets; wiring depends on Sean's AWS Secrets Manager + IRSA backend.
 - Secrets must stay reference-only in git. Any leaked value is an immediate fix.
