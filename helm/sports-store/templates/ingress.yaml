@@ -20,7 +20,7 @@ spec:
             pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ $.Release.Name }}-gateway
+                name: gateway
                 port:
                   number: {{ $.Values.services.gateway.service.port }}
           {{- end }}
