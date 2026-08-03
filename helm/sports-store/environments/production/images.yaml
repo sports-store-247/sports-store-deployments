@@ -1,22 +1,22 @@
 services:
   auth-service:
     image:
-      tag: "0.1.0-4d07aa6"
+      tag: "0.1.0-07d3441"
   cart-service:
     image:
-      tag: "0.1.0-d2b47cb"
+      tag: "0.1.0-ed79707"
   catalog-service:
     image:
-      tag: "0.1.0-1731467"
+      tag: "0.1.0-3bb343a"
   gateway:
     image:
       tag: "0.1.0-9feac67"
   order-service:
     image:
-      tag: "0.1.0-abb8a7c"
+      tag: "0.1.0-bfadf17"
   payment-service:
     image:
-      tag: "0.1.0-a154c07"
+      tag: "0.1.0-d1c2ef1"
   frontend:
     image:
       tag: "0.1.0-bb8d51a"
