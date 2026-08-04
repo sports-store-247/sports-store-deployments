@@ -16,7 +16,7 @@ services:
       tag: "0.1.0-bfadf17"
   payment-service:
     image:
-      tag: "0.1.0-d1c2ef1"
+      tag: "0.1.0-e7810a4"
   frontend:
     image:
       tag: "0.1.0-e80851c"
