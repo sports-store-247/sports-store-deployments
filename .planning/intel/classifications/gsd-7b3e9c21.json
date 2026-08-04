@@ -1,0 +1,38 @@
+{
+  "source_path": "E:/Genspark/sports-store-247/sports-store-deployments/GSD.md",
+  "type": "SPEC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "GSD — Operating Model",
+  "summary": "Process contract defining how work is run in the sports-store-deployments repo: the five-stage GSD loop, branching, PR gates, and scope guards.",
+  "scope": [
+    "sports-store-deployments repo",
+    "sports-store namespace",
+    "GSD loop (research, instructions, execution, verification, repo-feedback)",
+    "gsd/ note folders and file naming",
+    "branch naming conventions",
+    "PR approval gate on main",
+    "team coordination rules",
+    "secret handling policy",
+    "docs-task scope guards (helm/, terraform, application code)",
+    "repo layout (manifests, configmaps, secrets, mongodb, service dirs)"
+  ],
+  "cross_refs": [
+    "./STATUS.md",
+    "STATUS.md",
+    "GSD.md",
+    "gsd/research/",
+    "gsd/instructions/",
+    "gsd/executions/",
+    "gsd/verifications/",
+    "gsd/repo-feedback/",
+    "gsd/**",
+    "helm/",
+    "configmaps/",
+    "secrets/",
+    "mongodb/"
+  ],
+  "locked": false,
+  "precedence": 0,
+  "notes": "MANIFEST_TYPE=SPEC applied as authoritative; heuristics alone would have leaned DOC (prose process guide) since there are no API/schema contracts. Treated as a process specification with binding rules: (1) docs before changes, (2) one concern per branch/PR, (3) namespace 'sports-store' is fixed and must not be renamed, (4) no secret values in git — references only, (5) main is PR-gated with >=1 approval, (6) STATUS.md and gsd/ notes updated before opening a PR, (7) no autonomous process-affecting or cross-repo PRs without owner coordination, (8) docs tasks must not touch helm/, terraform, or application code. This file holds no live status; live state is in STATUS.md. Source hash is a deterministic placeholder — no shell available to compute SHA-256."
+}

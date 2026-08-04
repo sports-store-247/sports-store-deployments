@@ -1,0 +1,36 @@
+{
+  "source_path": "E:/Genspark/sports-store-247/sports-store-deployments/gsd/research/2026-08-03-team-status-update.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "Research — Team status update (org sweep + domain)",
+  "summary": "Documentation-only research note capturing org-sweep and domain-reachability findings, open blockers, and ownership boundaries as of 2026-08-03.",
+  "scope": [
+    "org sweep 2026-08-03",
+    "ECR image tags (:latest fixed across 7 repositories)",
+    "CI/CD push-to-ECR workflows",
+    "AWS OIDC auth regression to static access keys",
+    "Argo CD / GitOps structure (AppProject, environments/, per-service image files)",
+    "namespace mismatch cloudcart vs sports-store",
+    "Terraform naming leftovers (FraudstersList, FifaApp)",
+    "observability gaps (Alertmanager disabled, Grafana auth)",
+    "Helm app-secrets Secret rendering empty stringData",
+    "public domain reachability https://sportsstore.seansite.org/",
+    "frontend/gateway reachability vs unverified end-to-end API validation",
+    "project brief extension not formally declared",
+    "scope ownership split (David: deployments/Helm/GitOps/docs; infra/CI owners: rest)"
+  ],
+  "cross_refs": [
+    "STATUS.md",
+    "argocd.tf",
+    "prometheus.tf",
+    "pod-identity.tf",
+    "secrets.tf",
+    "tfc-oidc.tf",
+    "sports-store-infrastructure",
+    "sports-store-deployments"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": "MANIFEST_TYPE=DOC applied as authoritative. Heuristics would otherwise be ambiguous: the date-numeric filename prefix (2026-08-03-) superficially resembles an ADR sequence number, and the doc records a security blocker with owners, but it contains no Decision/Consequences sections, no status field, no requirements, and no interface contracts — it is a dated research/status capture. Explicitly self-described as documentation-only with no code, Helm, or Terraform changes. Findings are observations and follow-ups owned by other parties, so this contributes context only and must not be treated as locked decisions. Output filename suffix is a stable path-derived disambiguator; no shell was available to compute a true SHA-256 of the source path."
+}

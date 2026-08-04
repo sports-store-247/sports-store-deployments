@@ -1,0 +1,37 @@
+{
+  "source_path": "E:/Genspark/sports-store-247/sports-store-deployments/gsd/verifications/2026-08-03-helm-template-render.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "Verification - `helm template` render of `helm/sports-store`",
+  "summary": "Evidence report from a 2026-08-03 offline `helm template` render of the main-branch sports-store chart, listing seven verified findings and two extra observations.",
+  "scope": [
+    "helm/sports-store chart",
+    "argocd-app.yaml Argo CD Application and AppProject",
+    "environments/production values.yaml and images.yaml",
+    "templates/servicemonitor.yaml",
+    "templates/ingress.yaml",
+    "templates/services.yaml",
+    "templates/deployments.yaml",
+    "ECR image tags for auth/cart/catalog/gateway/order/payment services",
+    "MongoDB Bitnami subchart (mongodb-16.5.20.tgz)",
+    "External Secrets Operator resources (ExternalSecret, SecretStore, ServiceAccount)",
+    "AWS ALB Ingress for gateway",
+    "frontend workload absence"
+  ],
+  "cross_refs": [
+    "helm/sports-store",
+    "argocd-app.yaml",
+    "environments/production/values.yaml",
+    "environments/production/images.yaml",
+    "templates/servicemonitor.yaml",
+    "templates/ingress.yaml",
+    "templates/services.yaml",
+    "templates/deployments.yaml",
+    "charts/mongodb-16.5.20.tgz",
+    "secret.yaml"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": "MANIFEST_TYPE=DOC treated as authoritative; heuristic classification skipped. Filename carries a date-numeric prefix (2026-08-03-) that superficially resembles an ADR numbering convention, and the doc lives under gsd/verifications/ - but content is verification evidence (method, findings, summary table, boundary), with no Context/Decision/Consequences structure and no status field, so DOC is consistent with the manifest. Findings reference prior finding IDs F1, F2, F3 by label only - no source doc path is given for them, so they are not resolvable cross_refs. Findings recorded: (1) no ServiceMonitor renders; (2) servicemonitor.yaml ranges over undefined .Values.microservices instead of .Values.services - root cause of #1; (3) all six app images resolve to 0.1.0-latest; (4) that violates the <semver>-<git-hash> brief and embeds literal 'latest'; (5) gateway is the only Ingress; (6) argocd-app.yaml has duplicate metadata.name so the Application is named cloudcart; (7) ingress.yaml has duplicate service.name so the backend points at non-existent Service sports-store-gateway - elevated from cosmetic to functional routing defect. Extra: frontend renders no workload; ESO restructure renders. Boundary: template render only, E2E not verified."
+}

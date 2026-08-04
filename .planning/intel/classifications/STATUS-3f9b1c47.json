@@ -1,0 +1,126 @@
+{
+  "source_path": "E:\\Genspark\\sports-store-247\\sports-store-deployments\\STATUS.md",
+  "type": "PRD",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "STATUS — Sports Store Deployments",
+  "summary": "Live project dashboard tracking current deployment state, ownership boundaries, verification levels, and open risk/finding work items for the sports-store Helm/GitOps repo.",
+  "scope": [
+    "helm/sports-store umbrella chart",
+    "Bitnami MongoDB dependency",
+    "Argo CD AppProject + Application (argocd-app.yaml)",
+    "External Secrets Operator (externalsecret.yaml, secretstore.yaml, serviceaccount-eso.yaml)",
+    "environments/production values.yaml and images.yaml",
+    "ingress.yaml",
+    "servicemonitor.yaml",
+    "values-aws.yaml",
+    "mongo-init ConfigMap",
+    "sports-store namespace",
+    "Prometheus metrics scraping",
+    "MongoDB persistence / PVC / StorageClass",
+    "AWS Secrets Manager sports-store/production + IRSA",
+    "frontend chart management",
+    "public domain sportsstore.seansite.org",
+    "end-to-end verification"
+  ],
+  "cross_refs": [
+    "./GSD.md",
+    "./gsd/verifications/2026-08-03-post-merge-full-risk-scan.md",
+    "./gsd/repo-feedback/2026-08-03-deployments-post-merge-feedback.md",
+    "./gsd/verifications/2026-08-03-helm-template-render.md",
+    "./gsd/repo-feedback/2026-08-03-org-delta-summary.md",
+    "gsd/instructions/"
+  ],
+  "locked": false,
+  "precedence": 1,
+  "notes": "Manifest declared PRD and is authoritative; heuristics alone would read this as DOC (dashboard prose). Treated as requirement material per manifest: open work items are the primary requirements.",
+  "work_items": [
+    {
+      "id": "R1",
+      "severity": "critical",
+      "owner": "David Rubin",
+      "status": "open",
+      "verified": true,
+      "statement": "Metrics not scraped: ServiceMonitor selectors expect app.kubernetes.io/name: <service> but Services carry app.kubernetes.io/name: sports-store from the shared helper, so no Service matches and Prometheus scrapes nothing. Selector/label match must be corrected."
+    },
+    {
+      "id": "R2",
+      "severity": "critical",
+      "owner": "David Rubin",
+      "status": "open",
+      "verified": true,
+      "statement": "MongoDB has no persistence: datadir is emptyDir on a Deployment with no PVC, so data does not survive restart/upgrade/rollback/uninstall. Flagged as a brief violation; depends on Sean for EBS StorageClass."
+    },
+    {
+      "id": "R4",
+      "severity": "major",
+      "owner": "David Rubin",
+      "status": "open",
+      "verified": true,
+      "statement": "mongo-init ConfigMap renders with a blank namespace because .Values.namespace.name is missing, causing wrong-namespace placement on a raw kubectl apply without -n."
+    },
+    {
+      "id": "F2",
+      "severity": "major",
+      "owner": "David Rubin",
+      "status": "open",
+      "verified": true,
+      "statement": "Argo CD Application name renders as cloudcart due to a duplicate name: key in argocd-app.yaml; must be corrected to the sports-store application name."
+    },
+    {
+      "id": "F6",
+      "severity": "major",
+      "owner": "David Rubin",
+      "status": "open",
+      "verified": true,
+      "statement": "Frontend is not chart-managed: no Deployment or Service renders for it. Intent must be confirmed with the team and the chart aligned to that decision."
+    },
+    {
+      "id": "R3",
+      "severity": "critical",
+      "owner": "Sean (cross-team blocker)",
+      "status": "open-other-owner",
+      "verified": false,
+      "statement": "app-secrets and Mongo URIs come from AWS Secrets Manager sports-store/production via ESO using IRSA sports-store-external-secrets-role in us-east-1. Missing ESO operator, secret, properties, or IRSA leads to pods not ready, ALB 503, and demo failure. All *_MONGO_URI values must resolve sports-store-mongodb:27017."
+    },
+    {
+      "id": "R5",
+      "severity": "tracked",
+      "owner": "Daniel Rusman",
+      "status": "open-other-owner",
+      "verified": false,
+      "statement": "/metrics endpoints must be exposed on the services' http ports; tracked via fix/ci-instrumentator PRs."
+    },
+    {
+      "id": "SEAN-INFRA",
+      "severity": "tracked",
+      "owner": "Sean",
+      "status": "open-other-owner",
+      "verified": false,
+      "statement": "ALB controller install, EBS StorageClass needed for R2, and implementation of the declared required extension."
+    },
+    {
+      "id": "E2E",
+      "severity": "constraint",
+      "owner": "cross-team",
+      "status": "not-verified",
+      "verified": false,
+      "statement": "Frontend/domain reachability is only a status signal; full E2E (frontend to gateway to each API to data layer) is unverified and must never be conflated with reachability in any report."
+    },
+    {
+      "id": "SECRETS",
+      "severity": "constraint",
+      "owner": "David Rubin",
+      "status": "standing",
+      "verified": true,
+      "statement": "Secrets must stay reference-only in git; any leaked value is an immediate fix."
+    }
+  ],
+  "resolved_items": [
+    "F1 — image tags: all 6 app images now 0.1.0-<7char-hash>, no latest",
+    "F3 — ingress routing: backend routes to Service gateway:80 in sports-store",
+    "F4 — ServiceMonitors render (6 emitted), but selectors mismatch (see R1)",
+    "OIDC regression resolved across all 7 service repos",
+    "Deployments restructure landed on main (#17/#18), superseding the app-secrets empty stringData item"
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "source_path": "E:\\Genspark\\sports-store-247\\sports-store-deployments\\gsd\\verifications\\2026-08-03-post-merge-full-risk-scan.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "Verification - Post-merge full risk scan (deployments / Helm / GitOps)",
+  "summary": "Evidence report from helm lint plus helm template render of the sports-store chart, listing rendered resources, PASS checks, and seven open risks.",
+  "scope": [
+    "helm/sports-store chart",
+    "production values.yaml and images.yaml overlays",
+    "sports-store namespace resource inventory",
+    "ServiceMonitor / Prometheus scrape wiring",
+    "MongoDB (Bitnami) Deployment and datadir volume",
+    "External Secrets Operator (SecretStore, ExternalSecrets, IRSA)",
+    "Ingress / gateway Service backend",
+    "app container image tags",
+    "Argo CD Application definition",
+    "risk-to-failure-mode ownership mapping"
+  ],
+  "cross_refs": [
+    "./helm/sports-store",
+    "./helm/sports-store/environments/production/values.yaml",
+    "./helm/sports-store/environments/production/images.yaml",
+    "helm/sports-store/templates/mongo-init-configmap.yaml",
+    "argocd-app.yaml"
+  ],
+  "locked": false,
+  "precedence": null,
+  "findings": [
+    {
+      "id": "R1",
+      "severity": "high",
+      "owner": "David",
+      "title": "ServiceMonitor selectors do not match Service labels",
+      "evidence": "ServiceMonitor sports-store-gateway matchLabels app.kubernetes.io/name=gateway, but rendered Service/gateway carries app.kubernetes.io/name=sports-store from the shared sports-store.labels helper; applies to all 6 ServiceMonitors so Prometheus scrapes nothing."
+    },
+    {
+      "id": "R2",
+      "severity": "high",
+      "owner": "David",
+      "title": "MongoDB data is emptyDir (no persistence)",
+      "evidence": "MongoDB renders as a Deployment, datadir volume at /bitnami/mongodb is emptyDir {}, no PVC or volumeClaimTemplate renders; data lost on restart/upgrade/rollback and mongo-init reseeds each start. Violates the brief's persistence requirement."
+    },
+    {
+      "id": "R3",
+      "severity": "high",
+      "owner": "Sean (cross-team blocker, runtime)",
+      "title": "App secrets and Mongo URIs resolve from AWS Secrets Manager at runtime",
+      "evidence": "SecretStore aws-secrets-manager (provider aws, SecretsManager, us-east-1, serviceAccountRef app-secrets-sa); ServiceAccount app-secrets-sa IRSA role-arn arn:aws:iam::765858872029:role/sports-store-external-secrets-role; ExternalSecret app-secrets-eso -> Secret app-secrets, refreshInterval 1h, remoteRef key sports-store/production with JWT_SECRET and the five *_MONGO_URI properties; mongodb-credentials-eso -> Secret mongodb-credentials. Chart cannot self-verify resolution; failure yields pods not ready and ALB 503."
+    },
+    {
+      "id": "R4",
+      "severity": "medium",
+      "owner": "David",
+      "title": "mongo-init ConfigMap renders with no namespace",
+      "evidence": "mongo-init-configmap.yaml omits namespace: {{ .Values.namespace.name }}; correct under Argo CD destination namespace, lands in default under raw kubectl apply -f without -n. Same class as the previously fixed F3."
+    },
+    {
+      "id": "R5",
+      "severity": "medium",
+      "owner": "Daniel",
+      "title": "Metrics endpoint must actually exist on the pods",
+      "evidence": "ServiceMonitor endpoint port http, path /metrics; gateway container listens on 8080 (Service http 80->8080). Each service image must expose /metrics; relates to open fix/ci-instrumentator PRs in the service repos."
+    },
+    {
+      "id": "R6",
+      "severity": "informational",
+      "owner": "Sean",
+      "title": "Mongo root and user passwords share one source property",
+      "evidence": "mongodb-credentials-eso maps both mongodb-root-password and mongodb-passwords from the single MONGO_ROOT_PASSWORD property; functional but root equals user password."
+    },
+    {
+      "id": "R7",
+      "severity": "informational",
+      "owner": "David (separate task)",
+      "title": "Argo CD Application name is cloudcart (F2)",
+      "evidence": "argocd-app.yaml at repo root still has a duplicate name: key so the Application is named cloudcart; out of scope for this render, sync still functions."
+    }
+  ],
+  "verified_pass": [
+    "[1] helm lint: 1 chart linted, 0 failed (only 'icon is recommended' INFO)",
+    "[2] helm template: exit 0, 1519 lines, no stderr, namespace-aware",
+    "[4] Namespace consistency across all resources except ConfigMap/mongo-init (R4)",
+    "[5] Ingress backend service.name gateway port 80 matches rendered Service/gateway - F3 stays fixed",
+    "[7] Service/sports-store-mongodb on port 27017, DNS sports-store-mongodb.sports-store.svc:27017",
+    "[8] All 6 app images pinned to 0.1.0-<7char-hash>, MongoDB mongo:8.0, no latest tags - F1 resolved",
+    "[9] ESO wiring consistent: app-secrets-eso target Secret app-secrets matches every Deployment secretKeyRef"
+  ],
+  "notes": "Manifest-declared DOC accepted as authoritative. Filename carries a date-numeric prefix and the document is decision-adjacent (risk findings with owners), which could read as an ADR under naive heuristics, but the content is verification evidence from a template render - no Context/Decision/Consequences structure, no Status field, nothing locked. Explicit boundary: template render only, nothing applied to a cluster, E2E not verified."
+}

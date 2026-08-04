@@ -1,0 +1,52 @@
+{
+  "source_path": "E:\\Genspark\\sports-store-247\\sports-store-deployments\\README.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "Sports Store — Kubernetes manifests (starter)",
+  "summary": "Starter guide for the Stage 3 local Kubernetes manifests: directory layout, internal service DNS constraint, suggested kubectl/helm apply order, and the branching convention.",
+  "scope": [
+    "k8s manifest directory layout",
+    "sports-store namespace",
+    "app-secrets (JWT_SECRET, per-service MONGO_URI, mongo root creds)",
+    "configmaps (auth, cart, order, payment)",
+    "auth-service",
+    "catalog-service",
+    "cart-service",
+    "order-service",
+    "payment-service",
+    "gateway (nginx.conf, proxy_pass, external exposure)",
+    "MongoDB via Bitnami Helm chart (values.yaml, init-configmap.yaml)",
+    "kubectl/helm apply order",
+    "startup ordering (readinessProbe, initContainer, retry-friendly startup)",
+    "git branching convention and PR ruleset",
+    "STALENESS: document describes a Stage 3 starter state where every manifest holds inline TODO comments instead of working resource definitions; repo is now GitOps-managed with real per-service image tags, so the starter framing is likely stale relative to STATUS.md"
+  ],
+  "constraints": [
+    "Namespace must remain `sports-store` — later stages (Helm chart, EKS deploy, CI/CD, Argo CD, observability) all assume that name; do not rename.",
+    "Each backend Service `metadata.name` must match the hostnames used in `gateway/nginx.conf` `proxy_pass` lines (carried over from Stage 2 Compose aliases), or the gateway fails DNS resolution.",
+    "Changing a backend hostname requires updating the matching `proxy_pass` line in `gateway/nginx.conf` and rebuilding the gateway image.",
+    "Only the `gateway` Service may be externally reachable (NodePort/LoadBalancer/Ingress); all other Services stay ClusterIP.",
+    "Secrets must be applied before MongoDB values and app Deployments, since all of them reference `app-secrets`.",
+    "MongoDB must be healthy before app Deployments connect; ordering must come from retry-friendly app startup or an initContainer, not readinessProbe alone, and the chosen approach must be documented.",
+    "Branches follow `feature/<short-description>`, `bugfix/<short-description>`, `hotfix/<short-description>`.",
+    "All changes land on `main` via pull request with at least 1 approval, enforced by repository ruleset."
+  ],
+  "cross_refs": [
+    "services/*/Dockerfile",
+    "docker-compose.yml",
+    "k8s/namespace.yaml",
+    "k8s/secrets/app-secrets.yaml",
+    "k8s/configmaps/auth-config.yaml",
+    "k8s/configmaps/cart-config.yaml",
+    "k8s/configmaps/order-config.yaml",
+    "k8s/configmaps/payment-config.yaml",
+    "k8s/mongodb/values.yaml",
+    "k8s/mongodb/init-configmap.yaml",
+    "gateway/nginx.conf",
+    "seed/init-mongo.js"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": "Type taken from manifest (DOC), not heuristics; content signals agree — prose guide with layout, apply-order runbook, and conventions, no decision record, user stories, or API contracts. Flagged staleness: the doc self-describes as a starter where manifests contain only TODO comments, which conflicts with the repo's current GitOps state (per-service image tags committed for auth, cart, catalog, payment, frontend). The namespace, gateway-DNS, ClusterIP-only, and branching constraints should still be treated as live; the 'TODO placeholders' framing should be reconciled against STATUS.md before use."
+}

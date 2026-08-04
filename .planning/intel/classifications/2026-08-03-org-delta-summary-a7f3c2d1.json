@@ -1,0 +1,167 @@
+{
+  "source_path": "E:\\Genspark\\sports-store-247\\sports-store-deployments\\gsd\\repo-feedback\\2026-08-03-org-delta-summary.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "Org Delta Summary — 2026-08-03",
+  "summary": "Documentation-only retro note summarizing cross-repo changes since the last STATUS snapshot, classifying findings by owner, and queuing David's follow-up actions.",
+  "scope": [
+    "sports-store-deployments",
+    "sports-store-infrastructure",
+    "Helm chart sports-store",
+    "Argo CD AppProject/Application (argocd-app.yaml)",
+    "External Secrets Operator (externalsecret.yaml, secretstore.yaml, serviceaccount-eso.yaml)",
+    "environments/production values.yaml and images.yaml",
+    "ingress.yaml (ALB gateway)",
+    "servicemonitor.yaml",
+    "ECR image tagging scheme",
+    "GitHub Actions OIDC role-to-assume",
+    "CI branch fix/ci-instrumentator",
+    "observability stack (kube-prometheus, Loki, Alloy)"
+  ],
+  "cross_refs": [
+    "../research/2026-08-03-org-delta-monitor.md",
+    "gsd/verifications/",
+    "gsd/verifications/2026-08-03-helm-template-render.md",
+    "STATUS.md",
+    "GSD.md",
+    "helm/sports-store",
+    "environments/production/values.yaml",
+    "environments/production/images.yaml",
+    "argocd-app.yaml",
+    "externalsecret.yaml",
+    "secretstore.yaml",
+    "serviceaccount-eso.yaml",
+    "ingress.yaml",
+    "servicemonitor.yaml",
+    "values-aws.yaml",
+    "secret.yaml"
+  ],
+  "locked": false,
+  "precedence": null,
+  "action_items": [
+    {
+      "id": "F5",
+      "category": "immediate",
+      "owner": "David",
+      "blocked": false,
+      "action": "Refresh local from main — merge/rebase docs/helm-secret-bootstrap onto post-restructure main (#17/#18) before further deployment work; commit pending STATUS.md/GSD.md/coordinator docs on current base first."
+    },
+    {
+      "id": "F2",
+      "category": "immediate",
+      "owner": "David",
+      "blocked": false,
+      "action": "Document Argo CD Application duplicate name key defect (resolves to cloudcart); plan one-line correction to sports-store on a dedicated branch, fix later."
+    },
+    {
+      "id": "F3",
+      "category": "immediate",
+      "owner": "David",
+      "blocked": false,
+      "action": "Document ingress.yaml duplicate service.name key and note the intended service name."
+    },
+    {
+      "id": "F4",
+      "category": "immediate",
+      "owner": "David",
+      "blocked": false,
+      "action": "Verify ServiceMonitor rendering via helm template (.Values.microservices vs .Values.services mismatch) and record evidence under gsd/verifications/."
+    },
+    {
+      "id": "F1",
+      "category": "blocked",
+      "owner": "David",
+      "blocked": true,
+      "blocked_on": "Sean/Daniel — confirm ECR tag scheme and current pushed tags",
+      "action": "Replace latest/0.1.0-latest in images.yaml/values.yaml with real <semver>-<7char-hash> tags."
+    },
+    {
+      "id": "ESO-WIRING",
+      "category": "blocked",
+      "owner": "David",
+      "blocked": true,
+      "blocked_on": "Sean — AWS Secrets Manager / IRSA / SecretStore backend + IAM",
+      "action": "Confirm externalsecret.yaml/secretstore.yaml resolve against a real secrets backend."
+    },
+    {
+      "id": "ARGOCD-EVIDENCE",
+      "category": "blocked",
+      "owner": "David",
+      "blocked": true,
+      "blocked_on": "Sean — live EKS cluster",
+      "action": "Capture Argo CD Synced+Healthy evidence."
+    },
+    {
+      "id": "Q-SEAN-TAGS",
+      "category": "question",
+      "owner": "Sean",
+      "blocked": false,
+      "action": "What is the canonical ECR tag scheme and current pushed tag per service so images.yaml can be pinned (F1)? Is 0.1.0-latest deliberate or an oversight?"
+    },
+    {
+      "id": "Q-SEAN-ESO",
+      "category": "question",
+      "owner": "Sean",
+      "blocked": false,
+      "action": "Is the ESO SecretStore backend (AWS Secrets Manager + IRSA role) provisioned, and what secret keys/paths should the ExternalSecret reference?"
+    },
+    {
+      "id": "Q-SEAN-ALB",
+      "category": "question",
+      "owner": "Sean",
+      "blocked": false,
+      "action": "Is the AWS Load Balancer Controller installed so the gateway ingress.yaml (ALB) actually provisions?"
+    },
+    {
+      "id": "Q-MAXIM-OWNERSHIP",
+      "category": "question",
+      "owner": "Maxim",
+      "blocked": false,
+      "action": "Confirm ownership split for CI-workflow content review (Daniel reports / Sean decides) to close the coordinator plan's open assumption."
+    },
+    {
+      "id": "Q-DANIEL-CI",
+      "category": "question",
+      "owner": "Daniel",
+      "blocked": false,
+      "action": "Does fix/ci-instrumentator change published image tags or the /metrics endpoint the ServiceMonitor scrapes?"
+    },
+    {
+      "id": "D1",
+      "category": "track-only",
+      "owner": "Sean/CI",
+      "blocked": false,
+      "action": "OIDC revert — resolved. Track only, do not fix."
+    },
+    {
+      "id": "D2",
+      "category": "track-only",
+      "owner": "Sean/infra",
+      "blocked": false,
+      "action": "Required extension implementation — cross-team. Track only."
+    },
+    {
+      "id": "D3",
+      "category": "track-only",
+      "owner": "Daniel/service",
+      "blocked": false,
+      "action": "fix/ci-instrumentator PRs on 5 backends. Track only."
+    },
+    {
+      "id": "D4",
+      "category": "track-only",
+      "owner": "Sean/infra",
+      "blocked": false,
+      "action": "ALB controller + full observability stack. Track only."
+    },
+    {
+      "id": "D5",
+      "category": "track-only",
+      "owner": "informational",
+      "blocked": false,
+      "action": "sports-store-local drift — informational only."
+    }
+  ],
+  "notes": "MANIFEST_TYPE=DOC applied as authoritative. Date-numeric filename prefix (2026-08-03-) resembles an ADR numbering convention but is a date, not a decision number; document self-describes as documentation-only companion note with no Decision/Consequences sections. Non-schema field action_items added per orchestrator instruction to extract the DAVID ACTION QUEUE."
+}

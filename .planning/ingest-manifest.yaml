@@ -1,0 +1,55 @@
+# GSD ingest manifest - sports-store-deployments
+#
+# This repo does not follow the ADR/PRD/SPEC directory conventions that
+# /gsd:ingest-docs discovers by default. Its planning docs live in a
+# homegrown gsd/ tree (research -> instructions -> executions ->
+# verifications -> repo-feedback) described by GSD.md at the root.
+#
+# This manifest is the authoritative doc list. It exists so that:
+#   - GSD.md and STATUS.md are ingested at all (no convention matches them)
+#   - the date-prefixed gsd/ notes are NOT misclassified as ADRs by the
+#     `[0-9]{4}-` numbering regex, which collides with the `2026-` date prefix
+#
+# precedence: lower = higher precedence. Nothing here is a real ADR.
+
+docs:
+  # Process contract. Locked team rules: namespace, no-secrets-in-git,
+  # PR-gated main, coordinate-before-PR, scope guards.
+  - path: GSD.md
+    type: SPEC
+    precedence: 0
+
+  # Live dashboard. Holds the actual work items (R1, R2, R4, F2, F6) and
+  # ownership boundaries - the raw material for phases.
+  - path: STATUS.md
+    type: PRD
+    precedence: 1
+
+  # Concrete plan for a piece of work.
+  - path: gsd/instructions/2026-08-03-coordinator-agent-plan.md
+    type: SPEC
+    precedence: 2
+
+  # Research notes - investigation, options, org sweep findings.
+  - path: gsd/research/2026-08-03-team-status-update.md
+    type: DOC
+  - path: gsd/research/2026-08-03-org-delta-monitor.md
+    type: DOC
+  - path: gsd/research/2026-08-03-docs-bootstrap.md
+    type: DOC
+
+  # Verification evidence - helm lint/template output, risk scan results.
+  - path: gsd/verifications/2026-08-03-post-merge-full-risk-scan.md
+    type: DOC
+  - path: gsd/verifications/2026-08-03-helm-template-render.md
+    type: DOC
+
+  # Retros and follow-ups.
+  - path: gsd/repo-feedback/2026-08-03-org-delta-summary.md
+    type: DOC
+  - path: gsd/repo-feedback/2026-08-03-deployments-post-merge-feedback.md
+    type: DOC
+
+  # Deployment starter guide - apply order, service DNS constraints.
+  - path: README.md
+    type: DOC

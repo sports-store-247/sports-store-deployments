@@ -1,0 +1,29 @@
+{
+  "source_path": "E:/Genspark/sports-store-247/sports-store-deployments/gsd/research/2026-08-03-docs-bootstrap.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "Research — Docs bootstrap (split GSD vs. STATUS)",
+  "summary": "Research note recording why repo documentation was bootstrapped into a stable GSD.md operating model, a live STATUS.md dashboard, and gsd/ stage folders.",
+  "scope": [
+    "sports-store-deployments repo documentation",
+    "GSD.md operating model",
+    "STATUS.md live dashboard",
+    "gsd/ five-stage folder scaffold",
+    "separation of process contract from live status",
+    "docs-only change constraints",
+    "MongoDB seed verification follow-up"
+  ],
+  "cross_refs": [
+    "GSD.md",
+    "STATUS.md",
+    "gsd/research/",
+    "gsd/instructions/",
+    "gsd/executions/",
+    "gsd/verifications/",
+    "gsd/repo-feedback/"
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": "MANIFEST_TYPE=DOC applied as authoritative and matches content: this is a dated research/rationale note, not an ADR. Filename prefix '2026-08-03-' is a date, not an ADR sequence number, and the path is gsd/research/ rather than an adr/ directory. The doc does contain '## Decision' and rationale sections, which is the only competing ADR signal; it carries no Status: Accepted field and no numbered ADR identity, so it produces context only and no locked decisions. Findings captured: (1) no GSD.md existed in the working tree, git history, other branches, or stash, so the work was a bootstrap rather than a split of an existing file; (2) mixing a stable process contract with volatile live status makes both harder to maintain; (3) chosen structure is GSD.md for the operating model only, STATUS.md for the live dashboard only, and gsd/ with research/, instructions/, executions/, verifications/, repo-feedback/ so each loop stage leaves a dated auditable artifact. Constraints honored: docs-only (no Helm, Terraform, or application code touched), no secret values introduced, no commit/push/PR from the task. Open follow-ups: add the first gsd/verifications/ note after the MongoDB seed is validated live, and keep STATUS.md current as branches merge into main. Context: authored on branch docs/helm-secret-bootstrap, dated 2026-08-03. Source hash is a deterministic placeholder — no shell available to compute SHA-256."
+}

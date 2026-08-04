@@ -1,0 +1,101 @@
+{
+  "source_path": "E:/Genspark/sports-store-247/sports-store-deployments/gsd/repo-feedback/2026-08-03-deployments-post-merge-feedback.md",
+  "type": "DOC",
+  "confidence": "high",
+  "manifest_override": true,
+  "title": "Deployments - Post-merge feedback (2026-08-03)",
+  "summary": "Post-merge review of the merged Helm chart listing seven verified findings, owners, and a documentation-only action queue for David.",
+  "scope": [
+    "sports-store Helm chart",
+    "ServiceMonitor label selectors",
+    "MongoDB persistence (Bitnami subchart, emptyDir vs PVC)",
+    "External Secrets Operator / SecretStore",
+    "AWS Secrets Manager sports-store/production",
+    "IRSA role sports-store-external-secrets-role",
+    "mongo-init ConfigMap namespace",
+    "Argo CD Application (argocd-app.yaml)",
+    "Ingress / gateway ALB routing",
+    "service image tags (0.1.0-<hash>)",
+    "/metrics endpoints on service http port",
+    "frontend chart management gap"
+  ],
+  "cross_refs": [
+    "../verifications/2026-08-03-post-merge-full-risk-scan.md",
+    "gsd/verifications/2026-08-03-post-merge-full-risk-scan.md",
+    "gsd/instructions/",
+    "STATUS.md",
+    "argocd-app.yaml"
+  ],
+  "follow_ups": [
+    {
+      "id": "R1",
+      "severity": "high",
+      "owner": "David",
+      "action": "Align ServiceMonitor selector with Service labels (add app.kubernetes.io/name to Service, or switch selector to app: <service>); prove with helm template.",
+      "blocked": false
+    },
+    {
+      "id": "R2",
+      "severity": "high",
+      "owner": "David",
+      "action": "Enable Bitnami MongoDB persistence (persistence.enabled=true + storageClass/size) so data survives upgrade/rollback/uninstall; own branch.",
+      "blocked": true,
+      "blocker": "Needs confirmed EKS StorageClass / EBS CSI availability from Sean"
+    },
+    {
+      "id": "R3",
+      "severity": "high",
+      "owner": "Sean",
+      "action": "Provision ESO operator, populate Secrets Manager sports-store/production (JWT_SECRET, 5 *_MONGO_URI, MONGO_ROOT_PASSWORD), verify IRSA trust scoping to app-secrets-sa/sports-store.",
+      "blocked": true,
+      "blocker": "Cross-team runtime dependency; David tracks only"
+    },
+    {
+      "id": "R4",
+      "severity": "medium",
+      "owner": "David",
+      "action": "Add namespace: {{ .Values.namespace.name }} to the mongo-init ConfigMap.",
+      "blocked": false
+    },
+    {
+      "id": "R5",
+      "severity": "medium",
+      "owner": "Daniel",
+      "action": "Confirm service images expose /metrics on the http port and whether fix/ci-instrumentator changes that endpoint.",
+      "blocked": true,
+      "blocker": "Other owner - track only"
+    },
+    {
+      "id": "R6",
+      "severity": "info",
+      "owner": "Sean",
+      "action": "Mongo root and user passwords map to a single property - password-property design review.",
+      "blocked": true,
+      "blocker": "Other owner - track only"
+    },
+    {
+      "id": "R7",
+      "severity": "info",
+      "owner": "David",
+      "action": "Argo CD Application still named cloudcart in argocd-app.yaml - cosmetic rename as a separate task.",
+      "blocked": false
+    },
+    {
+      "id": "R8",
+      "severity": "info",
+      "owner": "David/team",
+      "action": "Confirm intent that the frontend is not chart-managed (no Deployment/Service).",
+      "blocked": false
+    },
+    {
+      "id": "next-safe-action",
+      "severity": "process",
+      "owner": "David",
+      "action": "Write gsd/instructions/ plans for R1 and R2 (each its own future branch), run helm template to prove selector/label alignment, update STATUS.md Next-up. No edits to Helm/Terraform/app/CI, no commits/pushes/PRs.",
+      "blocked": false
+    }
+  ],
+  "locked": false,
+  "precedence": null,
+  "notes": "Manifest declared DOC and was treated as authoritative. Filename carries a date-numeric prefix (2026-08-03-) that superficially resembles an ADR numbering convention, but content is a retro/post-merge feedback note: findings table with owners and an action queue, no Context/Decision/Consequences structure and no accepted decision. Documentation-only by its own guardrails section; produces context and follow-up items, not locked decisions."
+}
