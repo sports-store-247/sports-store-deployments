@@ -4,7 +4,7 @@ services:
       tag: "0.1.0-9f3b6f1"
   cart-service:
     image:
-      tag: "0.1.0-ed79707"
+      tag: "0.1.0-5519751"
   catalog-service:
     image:
       tag: "0.1.0-3bb343a"
