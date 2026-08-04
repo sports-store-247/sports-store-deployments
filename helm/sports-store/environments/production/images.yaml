@@ -7,7 +7,7 @@ services:
       tag: "0.1.0-5519751"
   catalog-service:
     image:
-      tag: "0.1.0-3bb343a"
+      tag: "0.1.0-e341ebc"
   gateway:
     image:
       tag: "0.1.0-a1941a2"
