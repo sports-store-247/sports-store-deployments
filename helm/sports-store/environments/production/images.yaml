@@ -1,7 +1,7 @@
 services:
   auth-service:
     image:
-      tag: "0.1.0-9f3b6f1"
+      tag: "0.1.0-4e86da2"
   cart-service:
     image:
       tag: "0.1.0-5519751"
