@@ -13,7 +13,7 @@ services:
       tag: "0.1.0-e7b8a3b"
   order-service:
     image:
-      tag: "0.1.0-bfadf17"
+      tag: "0.1.0-f7e41b0"
   payment-service:
     image:
       tag: "0.1.0-e7810a4"
