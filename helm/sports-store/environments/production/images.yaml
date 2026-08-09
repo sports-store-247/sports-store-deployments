@@ -10,7 +10,7 @@ services:
       tag: "0.1.0-191a683"
   gateway:
     image:
-      tag: "0.1.0-e7b8a3b"
+      tag: "0.1.0-0274543"
   order-service:
     image:
       tag: "0.1.0-f7e41b0"
