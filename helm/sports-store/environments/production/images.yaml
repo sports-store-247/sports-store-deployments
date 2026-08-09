@@ -19,4 +19,4 @@ services:
       tag: "0.1.0-12d94aa"
   frontend:
     image:
-      tag: "0.1.0-ef38ad3"
+      tag: "0.1.0-ad3b10d"
